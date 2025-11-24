@@ -22,7 +22,7 @@ export default function IngridientList(props) {
         </div>
 
         <button
-          onClick={props.toggleRecipeShown}
+          onClick={props.showRecipe}
           className="bg-[#EB6C31] text-white px-5 py-2 rounded-[6px]
                        text-[0.9rem] font-medium"
         >

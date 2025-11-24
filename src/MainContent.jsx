@@ -1,11 +1,12 @@
 import React from "react"
 import ClaudeRecepi from "./components/ClaudeRecepi"
 import IngridientList from "./components/IngridientList"
+// import { getRecipe } from "../server/ai"
 
 export default function MainContent() {
 
   const [ingridients, setIngridients] = React.useState([])
-  const [recipeShown, setRecipeShown] = React.useState(false)
+  const [recipe, setRecipe] = React.useState("")
 
   const ingridientsListItems = ingridients.map(ingridient => (
     <li key={ingridient}>{ingridient}</li>
@@ -16,8 +17,20 @@ export default function MainContent() {
     setIngridients(prev => [...prev, newIngridient])
   }
 
-  function toggleRecipeShown() {
-    setRecipeShown(prevShown => !prevShown)
+  async function getRecipe(ingridients) {
+    const res = await fetch("http://localhost:3000/recipe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ingridients })
+    });
+
+    const data = await res.json();
+    return data.recipe;
+  }
+
+  async function showRecipe() {
+    const recipeMarkdown = await getRecipe(ingridients)
+    setRecipe(recipeMarkdown)
   }
 
   return (
@@ -46,9 +59,9 @@ export default function MainContent() {
         </button>
       </form>
 
-      {ingridients.length > 0 && <IngridientList ingridientsListItems={ingridientsListItems} toggleRecipeShown={toggleRecipeShown} />}
+      {ingridients.length > 0 && <IngridientList ingridientsListItems={ingridientsListItems} showRecipe={showRecipe} />}
 
-      {recipeShown ? <ClaudeRecepi /> : null}
+      {recipe ? <ClaudeRecepi recipe={recipe} /> : null}
     </main>
   )
 }
